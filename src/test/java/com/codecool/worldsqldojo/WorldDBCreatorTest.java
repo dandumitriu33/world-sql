@@ -82,6 +82,9 @@ class WorldDBCreatorTest {
     @Test
     public void testIsFirstColumnOfCityTableNumber() {
         String expected = "22P02";
+        // invalid text representation SQLState code for Postgres
+        // https://www.postgresql.org/docs/10/errcodes-appendix.html
+
 
         Throwable exception = assertThrows(SQLException.class, () -> {
             worldDBCreator.executeUpdate("INSERT INTO city VALUES('a', 'a', 'a', 'a', 0)");
@@ -419,11 +422,11 @@ class WorldDBCreatorTest {
 
         Throwable exception = assertThrows(SQLException.class, () -> {
             worldDBCreator.executeUpdate("INSERT INTO country" +
-                    " VALUES('a', 'a', 'a', 'a', 0, 0, 0, 0, 0, 0, 'a', 'a', 'a', 1, 'a')");
+                    " VALUES('a', 'a', null, 'a', 0, 0, 0, 0, 0, 0, 'a', 'a', 'a', 1, 'a')");
 
         });
 
-        assertEquals(expected, ((SQLException)exception).getSQLState());
+        assertNotEquals(expected, ((SQLException)exception).getSQLState());
     }
 
     @Test
