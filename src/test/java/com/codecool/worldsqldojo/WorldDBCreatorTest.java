@@ -41,9 +41,35 @@ class WorldDBCreatorTest {
     @Test
     public void testInsertDataIntoTables() {
         try {
-            worldDBCreator.executeUpdate("TRUNCATE TABLE city CASCADE;");
-            worldDBCreator.executeUpdate("TRUNCATE TABLE country CASCADE;");
-            worldDBCreator.executeUpdate("TRUNCATE TABLE countrylanguage CASCADE;");
+            System.out.println("here  --");
+            worldDBCreator.executeUpdate("CREATE TABLE city (" +
+                    "id INTEGER," +
+                    "name VARCHAR(100)," +
+                    "country_code VARCHAR(3)," +
+                    "local_name VARCHAR(100)," +
+                    "population INTEGER);");
+            worldDBCreator.executeUpdate("CREATE TABLE country (" +
+                    "country_code VARCHAR(3)," +
+                    "name VARCHAR(100)," +
+                    "continent VARCHAR(20)," +
+                    "geographic_location VARCHAR(70)," +
+                    "a_number NUMERIC," +
+                    "established INTEGER," +
+                    "population INTEGER," +
+                    "life_expectancy NUMERIC," +
+                    "another_number NUMERIC," +
+                    "yet_another_number NUMERIC," +
+                    "local_name VARCHAR(100)," +
+                    "political_system VARCHAR(200)," +
+                    "leader VARCHAR(100)," +
+                    "alphabetic_index INTEGER," +
+                    "international_country_code VARCHAR(2)" +
+                    ");");
+            worldDBCreator.executeUpdate("CREATE TABLE countrylanguage (" +
+                    "country_code VARCHAR(3)," +
+                    "language VARCHAR(50)," +
+                    "truth BOOLEAN," +
+                    "a_float NUMERIC);");
             worldDBCreator.copyDataFromFile("city", "src/test/resources/city_data.txt");
             worldDBCreator.copyDataFromFile("country", "src/test/resources/country_data.txt");
             worldDBCreator.copyDataFromFile("countrylanguage", "src/test/resources/countrylanguage_data.txt");
