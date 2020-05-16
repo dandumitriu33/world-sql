@@ -33,4 +33,4 @@ CREATE TABLE countrylanguage (
     countrycode VARCHAR(3) REFERENCES country(code) NOT NULL,
     language VARCHAR(50) NOT NULL,
     isofficial BOOLEAN NOT NULL,
-    percentage NUMERIC(9, 6) NOT NULL);
+    percentage NUMERIC(10, 7) NOT NULL);
