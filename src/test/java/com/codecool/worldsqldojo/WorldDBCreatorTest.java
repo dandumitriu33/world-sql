@@ -41,35 +41,9 @@ class WorldDBCreatorTest {
     @Test
     public void testInsertDataIntoTables() {
         try {
-            System.out.println("here  --");
-            worldDBCreator.executeUpdate("CREATE TABLE city (" +
-                    "id NUMERIC NOT NULL UNIQUE," +
-                    "name VARCHAR(100) NOT NULL," +
-                    "countrycode VARCHAR(3) NOT NULL," +
-                    "local_name VARCHAR(100) NOT NULL," +
-                    "population INTEGER NOT NULL);");
-            worldDBCreator.executeUpdate("CREATE TABLE country (" +
-                    "code VARCHAR(3) NOT NULL UNIQUE," +
-                    "name VARCHAR(100) NOT NULL," +
-                    "continent VARCHAR(20) NOT NULL," +
-                    "region VARCHAR(70) NOT NULL," +
-                    "surfacearea NUMERIC NOT NULL," +
-                    "established INTEGER," +
-                    "population INTEGER NOT NULL," +
-                    "life_expectancy NUMERIC," +
-                    "another_number NUMERIC," +
-                    "yet_another_number NUMERIC," +
-                    "local_name VARCHAR(100) NOT NULL," +
-                    "governmentform VARCHAR(200) NOT NULL," +
-                    "leader VARCHAR(100)," +
-                    "capital INTEGER REFERENCES city(id)," +
-                    "international_country_code VARCHAR(2) NOT NULL" +
-                    ");");
-            worldDBCreator.executeUpdate("CREATE TABLE countrylanguage (" +
-                    "countrycode VARCHAR(3) REFERENCES country(code) NOT NULL," +
-                    "language VARCHAR(50) NOT NULL," +
-                    "isofficial BOOLEAN NOT NULL," +
-                    "percentage NUMERIC(9, 6) NOT NULL);");
+            worldDBCreator.executeUpdate("TRUNCATE TABLE city CASCADE;");
+            worldDBCreator.executeUpdate("TRUNCATE TABLE country CASCADE;");
+            worldDBCreator.executeUpdate("TRUNCATE TABLE countrylanguage CASCADE;");
             worldDBCreator.copyDataFromFile("city", "src/test/resources/city_data.txt");
             worldDBCreator.copyDataFromFile("country", "src/test/resources/country_data.txt");
             worldDBCreator.copyDataFromFile("countrylanguage", "src/test/resources/countrylanguage_data.txt");
@@ -82,9 +56,6 @@ class WorldDBCreatorTest {
     @Test
     public void testIsFirstColumnOfCityTableNumber() {
         String expected = "22P02";
-        // invalid text representation SQLState code for Postgres
-        // https://www.postgresql.org/docs/10/errcodes-appendix.html
-
 
         Throwable exception = assertThrows(SQLException.class, () -> {
             worldDBCreator.executeUpdate("INSERT INTO city VALUES('a', 'a', 'a', 'a', 0)");
@@ -422,11 +393,11 @@ class WorldDBCreatorTest {
 
         Throwable exception = assertThrows(SQLException.class, () -> {
             worldDBCreator.executeUpdate("INSERT INTO country" +
-                    " VALUES('a', 'a', null, 'a', 0, 0, 0, 0, 0, 0, 'a', 'a', 'a', 1, 'a')");
+                    " VALUES('a', 'a', 'a', 'a', 0, 0, 0, 0, 0, 0, 'a', 'a', 'a', 1, 'a')");
 
         });
 
-        assertNotEquals(expected, ((SQLException)exception).getSQLState());
+        assertEquals(expected, ((SQLException)exception).getSQLState());
     }
 
     @Test
@@ -510,20 +481,19 @@ class WorldDBCreatorTest {
     public void testSomeQueryBetweenCountryAndCountrylanguage() {
         String query =
                 "SELECT\n" +
-                    "cl.language, cl.percentage, co.name, co.region\n" +
-                "FROM\n" +
-                    "countrylanguage cl\n" +
-                    "JOIN country co\n" +
+                        "cl.language, cl.percentage, co.name, co.region\n" +
+                        "FROM\n" +
+                        "countrylanguage cl\n" +
+                        "JOIN country co\n" +
                         "ON cl.countrycode = co.code\n" +
-                "WHERE\n" +
-                    "cl.isofficial IS TRUE\n" +
-                "LIMIT 1\n";
+                        "WHERE\n" +
+                        "cl.isofficial IS TRUE\n" +
+                        "LIMIT 1\n";
 
         ResultSet resultSet = null;
         List<String> result = new ArrayList<>();
         List<String> expected = new ArrayList<>(Arrays.asList(
-//                "Pashto", "52.4000015", "Afghanistan", "Southern and Central Asia"));
-                "Pashto", "52.400002", "Afghanistan", "Southern and Central Asia"));
+                "Pashto", "52.4000015", "Afghanistan", "Southern and Central Asia"));
 
         try {
             resultSet = worldDBCreator.executeQuery(query);
