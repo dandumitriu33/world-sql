@@ -43,33 +43,33 @@ class WorldDBCreatorTest {
         try {
             System.out.println("here  --");
             worldDBCreator.executeUpdate("CREATE TABLE city (" +
-                    "id INTEGER," +
-                    "name VARCHAR(100)," +
-                    "country_code VARCHAR(3)," +
-                    "local_name VARCHAR(100)," +
-                    "population INTEGER);");
+                    "id NUMERIC NOT NULL UNIQUE," +
+                    "name VARCHAR(100) NOT NULL," +
+                    "countrycode VARCHAR(3) NOT NULL," +
+                    "local_name VARCHAR(100) NOT NULL," +
+                    "population INTEGER NOT NULL);");
             worldDBCreator.executeUpdate("CREATE TABLE country (" +
-                    "country_code VARCHAR(3)," +
-                    "name VARCHAR(100)," +
-                    "continent VARCHAR(20)," +
-                    "geographic_location VARCHAR(70)," +
-                    "a_number NUMERIC," +
+                    "code VARCHAR(3) NOT NULL UNIQUE," +
+                    "name VARCHAR(100) NOT NULL," +
+                    "continent VARCHAR(20) NOT NULL," +
+                    "region VARCHAR(70) NOT NULL," +
+                    "surfacearea NUMERIC NOT NULL," +
                     "established INTEGER," +
-                    "population INTEGER," +
+                    "population INTEGER NOT NULL," +
                     "life_expectancy NUMERIC," +
                     "another_number NUMERIC," +
                     "yet_another_number NUMERIC," +
-                    "local_name VARCHAR(100)," +
-                    "political_system VARCHAR(200)," +
+                    "local_name VARCHAR(100) NOT NULL," +
+                    "governmentform VARCHAR(200) NOT NULL," +
                     "leader VARCHAR(100)," +
-                    "alphabetic_index INTEGER," +
-                    "international_country_code VARCHAR(2)" +
+                    "capital INTEGER REFERENCES city(id)," +
+                    "international_country_code VARCHAR(2) NOT NULL" +
                     ");");
             worldDBCreator.executeUpdate("CREATE TABLE countrylanguage (" +
-                    "country_code VARCHAR(3)," +
-                    "language VARCHAR(50)," +
-                    "truth BOOLEAN," +
-                    "a_float NUMERIC);");
+                    "countrycode VARCHAR(3) REFERENCES country(code) NOT NULL," +
+                    "language VARCHAR(50) NOT NULL," +
+                    "isofficial BOOLEAN NOT NULL," +
+                    "percentage NUMERIC(9, 6) NOT NULL);");
             worldDBCreator.copyDataFromFile("city", "src/test/resources/city_data.txt");
             worldDBCreator.copyDataFromFile("country", "src/test/resources/country_data.txt");
             worldDBCreator.copyDataFromFile("countrylanguage", "src/test/resources/countrylanguage_data.txt");
@@ -519,7 +519,8 @@ class WorldDBCreatorTest {
         ResultSet resultSet = null;
         List<String> result = new ArrayList<>();
         List<String> expected = new ArrayList<>(Arrays.asList(
-                "Pashto", "52.4000015", "Afghanistan", "Southern and Central Asia"));
+//                "Pashto", "52.4000015", "Afghanistan", "Southern and Central Asia"));
+                "Pashto", "52.400002", "Afghanistan", "Southern and Central Asia"));
 
         try {
             resultSet = worldDBCreator.executeQuery(query);
